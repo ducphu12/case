@@ -7,15 +7,38 @@ class ProductRouting {
         product.map((product, index) => {
             tbody += `<tr style="text-align: center">
                     <td >${index}</td>
-                    <td>${product.name}</td>
-                    <td>${product.price}</td>
-                    <td><a href="product/edit/${product.id}" class="btn btn-danger">Edit</a> </td>
+                     <td><a href="product/detail/${product.id}"> ${product.nation}</a></td>
+                  
+                    <td>${product.area}</td>
+                    <td><a href="product/edit/${product.id}" class="btn btn-success">Edit</a> </td>
                      <td><a href="product/delete/${product.id}" class="btn btn-danger">Delete</a> </td>      
             </tr>`
         });
         indexHtml = indexHtml.replace('{product}', tbody);
         return indexHtml;
     }
+    static  detailProduct(req,res,id){
+        if(req.method === "GET"){
+            fs.readFile('./views/product/detail.html','utf8',async (err,detailHtml)=>{
+                if(err){
+                    console.log(err)
+                }else {
+
+                    let product = await ProductService.findById(id)
+                    console.log(product)
+                    detailHtml = detailHtml.replace("{nation}",product[0].nation)
+                    detailHtml = detailHtml.replace("{area}",product[0].area)
+                    detailHtml = detailHtml.replace("{people}",product[0].people)
+                    detailHtml = detailHtml.replace("{GDP}",product[0].GDP)
+                    detailHtml = detailHtml.replace("{description}",product[0].description)
+                    res.writeHead(200,'text/html')
+                    res.write(detailHtml)
+                    res.end()
+                }
+            })
+        }
+    }
+
 
     static showHome(req, res) {
         fs.readFile('./views/index.html', 'utf8', async (err, indexHtml) => {
@@ -31,6 +54,7 @@ class ProductRouting {
             }
         });
     }
+
 
     static showFormCreate(req, res) {
         if (req.method === "GET") {
@@ -73,7 +97,10 @@ class ProductRouting {
                     let product = await ProductService.findById(id);
 
                     editHtml = editHtml.replace(`{name}`,product[0].name);
-                    editHtml = editHtml.replace(`{price}`,product[0].price);
+                    editHtml = editHtml.replace(`{price}`,product[0].nation);
+                    editHtml = editHtml.replace(`{description}`,product[0].area);
+                    editHtml = editHtml.replace(`{name}`,product[0].people);
+                    editHtml = editHtml.replace(`{price}`,product[0].GDP);
                     editHtml = editHtml.replace(`{description}`,product[0].description);
                     res.writeHead(200, 'text/html');
                     res.write(editHtml);
@@ -111,7 +138,10 @@ class ProductRouting {
                 } else {
                     let product = await ProductService.findById(id);
                     deleteHtml = deleteHtml.replace(`{name}`,product[0].name);
-                    deleteHtml = deleteHtml.replace(`{price}`,product[0].price);
+                    deleteHtml = deleteHtml.replace(`{price}`,product[0].nation);
+                    deleteHtml = deleteHtml.replace(`{description}`,product[0].area);
+                    deleteHtml = deleteHtml.replace(`{name}`,product[0].people);
+                    deleteHtml = deleteHtml.replace(`{price}`,product[0].GDP);
                     deleteHtml = deleteHtml.replace(`{description}`,product[0].description);
                     res.writeHead(200, 'text/html');
                     res.write(deleteHtml);
@@ -143,5 +173,6 @@ class ProductRouting {
 
 
     };
+
 }
     module.exports = ProductRouting;
